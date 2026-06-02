@@ -65,10 +65,10 @@
   .price-row .cost{font-size:13px;color:var(--mut);font-family:'IBM Plex Mono',monospace;margin-top:3px;}
   .bigprice{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:34px;line-height:1;
     color:var(--green);text-align:right;letter-spacing:-.01em;}
-  .chips{display:flex;gap:8px;padding:10px 2px 11px;}
-  .chip{flex:1;background:var(--card2);border:1.5px solid var(--line);color:var(--mut);
-    font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:16px;border-radius:11px;
-    padding:12px 0;cursor:pointer;transition:.15s;}
+  .chips{display:flex;gap:6px;padding:2px 2px 9px;justify-content:flex-end;}
+  .chip{flex:none;background:var(--card2);border:1.5px solid var(--line);color:var(--mut);
+    font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:13px;border-radius:9px;
+    padding:6px 14px;cursor:pointer;transition:.15s;}
   .chip:active{transform:scale(.97);}
   .chip.on{border-color:var(--green);color:var(--green);background:var(--green-dim);}
   .reset{background:none;border:1px solid var(--line);color:var(--mut);font-family:'Archivo';
@@ -120,7 +120,7 @@
 
   <div class="section-label">Margen de ganancia</div>
   <div class="card job a2">
-    <div class="field"><label>Margen de ganancia</label>
+    <div class="field" style="border-bottom:none;padding-bottom:4px"><label>Margen de ganancia</label>
       <div class="ip"><span class="unit">%</span><input id="margen" inputmode="decimal" placeholder="100" style="padding-left:26px"></div></div>
     <div class="chips" id="multChips">
       <button class="chip" data-m="100">×2</button>
