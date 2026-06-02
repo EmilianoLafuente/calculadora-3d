@@ -1,0 +1,338 @@
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+  :root{
+    --bg:#0d0e10;
+    --bg2:#15171b;
+    --card:#1b1e23;
+    --card2:#22262d;
+    --line:#2c313a;
+    --txt:#eef1f5;
+    --mut:#8b94a3;
+    --amber:#ff6b1a;
+    --amber-soft:#ff8a47;
+    --green:#3ddc84;
+    --green-dim:#1c2a22;
+  }
+
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  body{
+    margin:0;
+    font-family:'Archivo',sans-serif;
+    background:
+      radial-gradient(120% 80% at 50% -10%, #1a1d22 0%, var(--bg) 55%),
+      var(--bg);
+    color:var(--txt);
+    min-height:100vh;
+    padding:0 0 140px;
+  }
+  body::before{
+    content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.035;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  .wrap{max-width:520px;margin:0 auto;padding:0 16px;position:relative;z-index:1;}
+
+  header{
+    padding:28px 4px 18px;
+    display:flex;align-items:center;gap:13px;
+    animation:rise .5s ease both;
+  }
+  .logo{
+    width:42px;height:42px;border-radius:11px;flex:none;
+    background:linear-gradient(145deg,var(--amber),#c4490a);
+    display:grid;place-items:center;
+    box-shadow:0 6px 20px -6px rgba(255,107,26,.6);
+  }
+  .logo svg{width:23px;height:23px;}
+  header h1{
+    font-size:20px;font-weight:800;letter-spacing:-.02em;margin:0;line-height:1.05;
+  }
+  header p{margin:2px 0 0;font-size:12.5px;color:var(--mut);font-weight:500;}
+
+  .section-label{
+    font-size:11px;text-transform:uppercase;letter-spacing:.13em;
+    color:var(--mut);font-weight:700;margin:22px 6px 11px;
+    display:flex;align-items:center;gap:8px;
+  }
+  .section-label::after{content:"";height:1px;flex:1;background:var(--line);}
+
+  .card{
+    background:linear-gradient(180deg,var(--card),var(--bg2));
+    border:1px solid var(--line);border-radius:18px;padding:6px 16px;
+    animation:rise .5s ease both;
+  }
+
+  .field{
+    display:flex;align-items:center;gap:12px;
+    padding:13px 2px;border-bottom:1px solid var(--line);
+  }
+  .field:last-child{border-bottom:none;}
+  .field label{flex:1;font-size:14.5px;font-weight:500;}
+  .field label small{display:block;font-size:11px;color:var(--mut);font-weight:400;margin-top:1px;}
+
+  .ip{
+    width:118px;flex:none;position:relative;
+  }
+  .ip input{
+    width:100%;background:var(--card2);border:1.5px solid var(--line);
+    border-radius:11px;color:var(--txt);
+    font-family:'IBM Plex Mono',monospace;font-size:16px;font-weight:500;
+    padding:11px 12px;text-align:right;outline:none;transition:border-color .15s,box-shadow .15s;
+  }
+  .ip input:focus{border-color:var(--amber);box-shadow:0 0 0 3px rgba(255,107,26,.15);}
+  .ip .unit{
+    position:absolute;left:11px;top:50%;transform:translateY(-50%);
+    font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--mut);pointer-events:none;
+  }
+  .ip.hasunit input{text-align:right;}
+
+  /* JOB inputs — bigger */
+  .job .field{padding:16px 2px;}
+  .job .ip{width:132px;}
+  .job .ip input{font-size:18px;padding:13px 13px;}
+  .job .field label{font-size:16px;font-weight:600;}
+
+  /* config toggle */
+  .cfg-head{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:15px 4px;cursor:pointer;user-select:none;
+  }
+  .cfg-head .ttl{display:flex;align-items:center;gap:10px;font-weight:700;font-size:15px;}
+  .cfg-head .ttl svg{width:18px;height:18px;color:var(--amber-soft);}
+  .chev{transition:transform .25s;color:var(--mut);}
+  .cfg.open .chev{transform:rotate(180deg);}
+  .cfg-body{max-height:0;overflow:hidden;transition:max-height .35s ease;}
+  .cfg.open .cfg-body{max-height:900px;}
+
+  .saved-pill{
+    font-size:11px;font-weight:600;color:var(--green);
+    background:var(--green-dim);border-radius:20px;padding:3px 10px;
+    opacity:0;transition:opacity .3s;
+  }
+  .saved-pill.show{opacity:1;}
+
+  /* result */
+  .result{
+    position:fixed;left:0;right:0;bottom:0;z-index:5;
+    background:linear-gradient(180deg,rgba(13,14,16,.5),var(--bg) 38%);
+    backdrop-filter:blur(12px);
+    border-top:1px solid var(--line);
+    padding:14px 16px calc(16px + env(safe-area-inset-bottom));
+  }
+  .result .inner{max-width:520px;margin:0 auto;}
+  .breakdown{display:flex;flex-wrap:wrap;gap:6px 14px;margin-bottom:11px;}
+  .breakdown span{font-size:11.5px;color:var(--mut);font-family:'IBM Plex Mono',monospace;}
+  .breakdown span b{color:#c7ccd4;font-weight:500;}
+  .price-row{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;}
+  .price-row .lab{font-size:12px;text-transform:uppercase;letter-spacing:.12em;color:var(--mut);font-weight:700;}
+  .price-row .cost{font-size:13px;color:var(--mut);font-family:'IBM Plex Mono',monospace;margin-top:3px;}
+  .bigprice{
+    font-family:'IBM Plex Mono',monospace;font-weight:600;
+    font-size:34px;line-height:1;color:var(--green);
+    text-align:right;letter-spacing:-.01em;
+  }
+  .bigprice small{font-size:16px;color:var(--mut);font-weight:400;}
+
+  .reset{
+    background:none;border:1px solid var(--line);color:var(--mut);
+    font-family:'Archivo';font-size:12px;font-weight:600;border-radius:9px;
+    padding:7px 12px;cursor:pointer;margin:14px 4px 0;transition:.15s;
+  }
+  .reset:active{background:var(--card2);}
+
+  @keyframes rise{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+  header{animation-delay:0s}
+  .a1{animation-delay:.06s}.a2{animation-delay:.12s}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="logo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2L3 7v10l9 5 9-5V7z"/><path d="M3 7l9 5 9-5M12 22V12"/>
+      </svg>
+    </div>
+    <div>
+      <h1>Calculadora 3D</h1>
+      <p>Costo y precio por trabajo</p>
+    </div>
+  </header>
+
+  <!-- JOB -->
+  <div class="section-label">Este trabajo</div>
+  <div class="card job a1">
+    <div class="field">
+      <label>Material <small>peso de la pieza</small></label>
+      <div class="ip hasunit"><span class="unit">g</span><input id="gramos" inputmode="decimal" placeholder="0" style="padding-left:26px"></div>
+    </div>
+    <div class="field">
+      <label>Tiempo de impresión</label>
+      <div class="ip hasunit"><span class="unit">h</span><input id="horas" inputmode="decimal" placeholder="0" style="padding-left:26px"></div>
+    </div>
+    <div class="field">
+      <label>Postprocesado <small>lijado, armado, etc.</small></label>
+      <div class="ip hasunit"><span class="unit">min</span><input id="postMin" inputmode="decimal" placeholder="0" style="padding-left:38px"></div>
+    </div>
+  </div>
+
+  <!-- CONFIG -->
+  <div class="section-label">Configuración</div>
+  <div class="card cfg" id="cfg">
+    <div class="cfg-head" id="cfgHead">
+      <div class="ttl">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        Mis valores fijos
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <span class="saved-pill" id="savedPill">guardado ✓</span>
+        <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+      </div>
+    </div>
+    <div class="cfg-body">
+      <div class="field">
+        <label>Símbolo de moneda</label>
+        <div class="ip"><input id="moneda" maxlength="4" placeholder="$" style="text-align:center"></div>
+      </div>
+      <div class="field">
+        <label>Precio del filamento <small>por kilo</small></label>
+        <div class="ip"><input id="filamentoKg" inputmode="decimal" placeholder="0"></div>
+      </div>
+      <div class="field">
+        <label>Costo de electricidad <small>por kWh</small></label>
+        <div class="ip"><input id="electKwh" inputmode="decimal" placeholder="0"></div>
+      </div>
+      <div class="field">
+        <label>Consumo de la impresora <small>potencia media</small></label>
+        <div class="ip hasunit"><span class="unit">W</span><input id="consumoW" inputmode="decimal" placeholder="150" style="padding-left:26px"></div>
+      </div>
+      <div class="field">
+        <label>Costo de la máquina <small>para amortizar</small></label>
+        <div class="ip"><input id="costoMaquina" inputmode="decimal" placeholder="0"></div>
+      </div>
+      <div class="field">
+        <label>Vida útil de la máquina <small>horas de uso</small></label>
+        <div class="ip hasunit"><span class="unit">h</span><input id="vidaUtilH" inputmode="decimal" placeholder="5000" style="padding-left:26px"></div>
+      </div>
+      <div class="field">
+        <label>Mano de obra <small>tu hora de trabajo</small></label>
+        <div class="ip hasunit"><span class="unit">/h</span><input id="manoObraH" inputmode="decimal" placeholder="0" style="padding-left:30px"></div>
+      </div>
+      <div class="field">
+        <label>Margen de ganancia</label>
+        <div class="ip hasunit"><span class="unit">%</span><input id="margen" inputmode="decimal" placeholder="50" style="padding-left:26px"></div>
+      </div>
+      <div class="field">
+        <label>Reserva por fallos <small>impresiones fallidas</small></label>
+        <div class="ip hasunit"><span class="unit">%</span><input id="fallos" inputmode="decimal" placeholder="10" style="padding-left:26px"></div>
+      </div>
+    </div>
+  </div>
+  <button class="reset" id="resetBtn">Borrar valores guardados</button>
+</div>
+
+<!-- RESULT -->
+<div class="result">
+  <div class="inner">
+    <div class="breakdown" id="breakdown"></div>
+    <div class="price-row">
+      <div>
+        <div class="lab">Precio de venta</div>
+        <div class="cost" id="costoLine">costo —</div>
+      </div>
+      <div class="bigprice" id="bigPrice">—</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const CFG_FIELDS = ['moneda','filamentoKg','electKwh','consumoW','costoMaquina','vidaUtilH','manoObraH','margen','fallos'];
+const JOB_FIELDS = ['gramos','horas','postMin'];
+const $ = id => document.getElementById(id);
+const num = id => { const v = parseFloat(($(id).value||'').replace(',','.')); return isNaN(v)?0:v; };
+
+let savedTimer;
+
+// ---- persistencia (localStorage del navegador) ----
+function loadConfig(){
+  try{
+    const raw = localStorage.getItem('config3d');
+    if(raw){
+      const c = JSON.parse(raw);
+      CFG_FIELDS.forEach(f => { if(c[f]!==undefined && c[f]!=='') $(f).value = c[f]; });
+    }
+  }catch(e){ /* primera vez: no hay nada guardado */ }
+  calc();
+}
+function saveConfig(){
+  const c = {};
+  CFG_FIELDS.forEach(f => c[f] = $(f).value);
+  try{
+    localStorage.setItem('config3d', JSON.stringify(c));
+    const p = $('savedPill'); p.classList.add('show');
+    clearTimeout(savedTimer);
+    savedTimer = setTimeout(()=>p.classList.remove('show'), 1600);
+  }catch(e){}
+}
+
+// ---- cálculo ----
+function fmt(n){
+  const sym = $('moneda').value.trim() || '$';
+  const s = n.toLocaleString('es-UY',{minimumFractionDigits:2,maximumFractionDigits:2});
+  return sym + ' ' + s;
+}
+
+function calc(){
+  const gramos = num('gramos'), horas = num('horas'), postMin = num('postMin');
+
+  const cMaterial = gramos * (num('filamentoKg')/1000);
+  const cLuz      = (num('consumoW')/1000) * horas * num('electKwh');
+  const vida      = num('vidaUtilH');
+  const cMaquina  = vida>0 ? (num('costoMaquina')/vida) * horas : 0;
+  const cManoObra = num('manoObraH') * (postMin/60);
+
+  const subtotal  = cMaterial + cLuz + cMaquina + cManoObra;
+  const cFallos   = subtotal * (num('fallos')/100);
+  const costoTotal= subtotal + cFallos;
+  const precio    = costoTotal * (1 + num('margen')/100);
+  const ganancia  = precio - costoTotal;
+
+  // desglose
+  const bd = $('breakdown');
+  const has = gramos||horas||postMin;
+  if(!has){
+    bd.innerHTML = '<span style="color:var(--mut)">Ingresá los datos del trabajo arriba</span>';
+    $('bigPrice').innerHTML = '—';
+    $('costoLine').textContent = 'costo —';
+    return;
+  }
+  const rows = [
+    ['Material', cMaterial],
+    ['Luz', cLuz],
+    ['Máquina', cMaquina],
+    ['Mano de obra', cManoObra],
+    ['Fallos', cFallos],
+  ].filter(r => r[1] > 0);
+  bd.innerHTML = rows.map(r => `<span>${r[0]} <b>${fmt(r[1])}</b></span>`).join('')
+    + `<span style="color:var(--amber-soft)">Ganancia <b style="color:var(--amber-soft)">${fmt(ganancia)}</b></span>`;
+
+  $('bigPrice').innerHTML = fmt(precio);
+  $('costoLine').textContent = 'costo ' + fmt(costoTotal);
+}
+
+// ---- listeners ----
+JOB_FIELDS.forEach(f => $(f).addEventListener('input', calc));
+CFG_FIELDS.forEach(f => $(f).addEventListener('input', ()=>{ calc(); saveConfig(); }));
+
+$('cfgHead').addEventListener('click', ()=> $('cfg').classList.toggle('open'));
+
+$('resetBtn').addEventListener('click', ()=>{
+  if(!confirm('¿Borrar todos los valores guardados de configuración?')) return;
+  try{ localStorage.removeItem('config3d'); }catch(e){}
+  CFG_FIELDS.forEach(f => $(f).value = '');
+  $('consumoW').value='150'; $('vidaUtilH').value='5000'; $('margen').value='50'; $('fallos').value='10';
+  saveConfig(); calc();
+});
+
+loadConfig();
+</script>
